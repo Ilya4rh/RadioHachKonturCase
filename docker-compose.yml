@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./code-invaders-front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./back/back
+    ports:
+      - "5000:5000"
+    volumes:
+      - database_volume:/back/back/radioHack.db
+    restart: unless-stopped
+
+volumes:
+  database_volume:
