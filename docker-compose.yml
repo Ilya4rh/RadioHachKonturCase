@@ -16,8 +16,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5085
     volumes:
-      - /back/back/Application/radioHack.db:/back/back/Application/radioHack.db
+      - ./back/back/:/back/back/
     restart: unless-stopped
-
-#volumes:
-#  database_volume:
+    
