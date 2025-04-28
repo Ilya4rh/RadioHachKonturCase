@@ -16,22 +16,26 @@ public class TournamentService : ITournamentService
     
     public async Task<List<TournamentEntity>> GetAllAsync()
     {
-        var tournaments = _context.Tournaments.Select(x => x.Value)
-            .Where(x => x.DateTimeStart <= DateTime.Now && x.DateTimeEnd > DateTime.Now);
+        var tournaments = await _context.Tournaments.ToListAsync();
 
         return tournaments
+            .Where(tournament => tournament.DateTimeStart <= DateTime.Now && tournament.DateTimeEnd > DateTime.Now)
             .ToList();
     }
 
     public async Task<TournamentEntity> GetByIdAsync(Guid id)
     {
-        return _context.Tournaments[id];
+        var tournament = await _context.Tournaments.FirstOrDefaultAsync(t => t.Id == id);
+
+        return tournament!;
     }
 
     public async Task<Guid> AddAsync(TournamentEntity tournament)
     {
-        _context.Tournaments[tournament.Id] = tournament;
+        var newTournament = await _context.Tournaments.AddAsync(tournament);
+        
+        await _context.SaveChangesAsync();
 
-        return tournament.Id;
+        return newTournament.Entity.Id;
     }
 }

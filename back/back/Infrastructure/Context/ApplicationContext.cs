@@ -1,16 +1,18 @@
-﻿using System.Collections.Concurrent;
-using Infrastructure.Entities;
+﻿using Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context;
 
-public class ApplicationContext
+public class ApplicationContext : DbContext
 {
     public ApplicationContext()
     {
-        Tournaments = new ConcurrentDictionary<Guid, TournamentEntity>();
-        GameResults = new ConcurrentDictionary<Guid, GameResultEntity>();
+        Database.EnsureCreated();
     }
-    public ConcurrentDictionary<Guid, TournamentEntity> Tournaments { get; set; } = null!;
+    public DbSet<TournamentEntity> Tournaments { get; set; } = null!;
     
-    public ConcurrentDictionary<Guid, GameResultEntity> GameResults { get; set; } = null!;
+    public DbSet<GameResultEntity> GameResults { get; set; } = null!;
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite("Data Source=radioHack.db");
 }
