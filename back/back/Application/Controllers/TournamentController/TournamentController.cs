@@ -46,4 +46,11 @@ public class TournamentController : ControllerBase
         
         return Ok(id);
     }
+    [HttpDelete("tournament/delete{id:guid}")]
+    [ProducesResponseType<Guid>(200)]
+    public async Task<IActionResult> DeleteTournament(Guid id)
+    {
+        var result = await _tournamentService.DeleteAsync(id);
+        return Ok(id);
+    }
 }

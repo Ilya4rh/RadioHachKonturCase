@@ -18,9 +18,9 @@ public class TournamentService : ITournamentService
     {
         var tournaments = await _context.Tournaments.ToListAsync();
 
-        return tournaments
-            .Where(tournament => tournament.DateTimeStart <= DateTime.Now && tournament.DateTimeEnd > DateTime.Now)
-            .ToList();
+        return tournaments;
+        // .Where(tournament => tournament.DateTimeStart <= DateTime.Now && tournament.DateTimeEnd > DateTime.Now)
+        // .ToList();
     }
 
     public async Task<TournamentEntity> GetByIdAsync(Guid id)
@@ -37,5 +37,15 @@ public class TournamentService : ITournamentService
         await _context.SaveChangesAsync();
 
         return newTournament.Entity.Id;
+    }
+    
+    public async Task<Guid> DeleteAsync(Guid id)
+    {
+        _context.Tournaments.Remove(await GetByIdAsync(id));
+        var deleted = _context.GameResults.Where(tg => tg.TournamentId == id).ToList();
+        _context.GameResults.RemoveRange(deleted);
+        await _context.SaveChangesAsync();
+
+        return id;
     }
 }
