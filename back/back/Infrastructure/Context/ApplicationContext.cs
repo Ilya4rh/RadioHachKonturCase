@@ -5,6 +5,10 @@ namespace Infrastructure.Context;
 
 public class ApplicationContext : DbContext
 {
+    public ApplicationContext()
+    {
+        Database.EnsureCreated();
+    }
     public DbSet<TournamentEntity> Tournaments { get; set; } = null!;
     
     public DbSet<GameResultEntity> GameResults { get; set; } = null!;
