@@ -16,27 +16,24 @@ public class GameResultService : IGameResultService
 
     public async Task<List<GameResultEntity>> GetResultsByTournamentId(Guid tournamentId)
     {
-        var results = await _context.GameResults
-            .Where(result => result.TournamentId == tournamentId)
+        var results = _context.GameResults
+            .Where(result => result.Value.TournamentId == tournamentId)
+            .Select(x => x.Value)
             .OrderByDescending(result => result.NumberOfPoints)
-            .ToListAsync();
+            .ToList();
 
-        return results.ToList();
+        return results;
     }
 
     public async Task<Guid> AddGameResult(GameResultEntity gameResultEntity)
     {
-        var newGameResult = await _context.GameResults.AddAsync(gameResultEntity);
+        var newGameResult = _context.GameResults[gameResultEntity.Id] = gameResultEntity;
 
-        await _context.SaveChangesAsync();
-
-        return newGameResult.Entity.Id;
+        return newGameResult.Id;
     }
 
     public async Task ChangeGameResult(GameResultEntity gameResultEntity)
-    {
-        _context.GameResults.Update(gameResultEntity);
-        
-        await _context.SaveChangesAsync();
+    { 
+        _context.GameResults[gameResultEntity.Id] = gameResultEntity;
     }
 }
