@@ -41,7 +41,7 @@ export function TournamentDetails() {
 
     setTimeout(() => {
       setNotifications(prev => prev.filter(notification => notification.id !== id));
-    }, 5000);
+    },5085);
   };
 
   function formatDateTime(dateString: string): string {
@@ -69,8 +69,8 @@ export function TournamentDetails() {
     try {
       const cacheBuster = `cacheBuster=${new Date().getTime()}`;
       const [resultsResponse, tournamentResponse] = await Promise.all([
-        fetch(`http://localhost:5000/api/gameResults/${tournamentId}?${cacheBuster}`),
-        fetch(`http://localhost:5000/api/tournaments/tournament/${tournamentId}?${cacheBuster}`)
+        fetch(`http://localhost:5085/api/gameResults/${tournamentId}?${cacheBuster}`),
+        fetch(`http://localhost:5085/api/tournaments/tournament/${tournamentId}?${cacheBuster}`)
       ]);
 
       if (resultsResponse.ok) {

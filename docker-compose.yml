@@ -11,7 +11,7 @@ services:
   backend:
     build: ./back/back
     ports:
-      - "5000:5000"
+      - "5085:5085"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
