@@ -7,6 +7,9 @@ export const config = {
     height: 1820,
     parent: "phaser-container",
     backgroundColor: "#07002F",
+    dom: {
+        createContainer: true
+    },
     scene: MainMenuScene,
     scale: {
         mode: Phaser.Scale.FIT,
