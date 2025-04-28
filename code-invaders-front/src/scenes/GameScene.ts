@@ -91,7 +91,7 @@ export class GameScene extends Phaser.Scene
                     this.physics.add.collider(leak, this.programmer!,
                         (a, b) => {
                             a.destroy(true);
-                            this.enemies.forEach(x => x.update(this.time.now, 0));
+                            this.enemies.filter(x => x.y > 0).forEach(x => x.update(this.time.now, 0));
                     });
                 }
                 if (randomBonusNumber === 1){
@@ -117,12 +117,12 @@ export class GameScene extends Phaser.Scene
             if (this.enemies.length > 0){
                 const lastEnemy = this.getLastEnemy();
                 if (lastEnemy.x + 30 > this.scale.width - 300)
-                    this.enemies.push(new Enemy(this, 150, lastEnemy.y + 200, this.enemiesSpeed))
+                    this.enemies.push(new Enemy(this, 150, lastEnemy.y - 200, this.enemiesSpeed))
                 else
                     this.enemies.push(new Enemy(this, lastEnemy.x + 200, lastEnemy.y, this.enemiesSpeed))
             }
             else{
-                this.enemies.push(new Enemy(this, 150, 50, this.enemiesSpeed))
+                this.enemies.push(new Enemy(this, 150, -50, this.enemiesSpeed))
             }
         }
         const bullets = this.children.list
@@ -143,9 +143,9 @@ export class GameScene extends Phaser.Scene
 
     getLastEnemy(): Enemy {
         return this.enemies.reduce(function(prev, curr) {
-            if (prev.y < curr.y)
-                return curr;
             if (prev.y > curr.y)
+                return curr;
+            if (prev.y < curr.y)
                 return prev;
             return prev.x > curr.x ? prev : curr;
         });
