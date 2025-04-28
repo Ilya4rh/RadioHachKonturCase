@@ -131,8 +131,8 @@ export class MainMenuScene extends Phaser.Scene
             });
             formHtml += `</select>`;
 
-            formHtml += `<label for="playerNameInput">Ваше имя:</label>`;
-            formHtml += `<input type="text" id="playerNameInput" name="playerName" placeholder="Введите имя" required maxlength="50">`;
+            formHtml += `<label for="playerNameInput">Введите ваш telegram:</label>`;
+            formHtml += `<input type="text" id="playerNameInput" name="playerName" placeholder="@username" required maxlength="50">`;
 
              formHtml += `<div id="validationError" class="error-message"></div>`;
             formHtml += `<button id="startButton">Начать игру</button>`;

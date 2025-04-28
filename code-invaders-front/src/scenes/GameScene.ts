@@ -207,6 +207,26 @@ export class GameScene extends Phaser.Scene
                 });
              }
         }
+
+        const waves = this.children.list.filter(x => x.active && x instanceof UnitTestWave);
+        this.physics.add.collider(waves, this.enemies.filter(e => e.active),
+            (waveInstance, enemy) => {
+                const waveObj = waveInstance as UnitTestWave;
+                const enemyInstance = enemy as Enemy;
+                if (waveObj.active && enemyInstance.active) {
+                    this.destroyEnemy(enemyInstance);
+                }
+            });
+        const bullets = this.children.list.filter(x => x.active && x instanceof Bullet);
+        this.physics.add.collider(bullets, this.enemies.filter(e => e.active),
+            (bullet, enemy) => {
+                const bulletInstance = bullet as Bullet;
+                const enemyInstance = enemy as Enemy;
+                if (bulletInstance.active && enemyInstance.active) {
+                    bulletInstance.destroy(true);
+                    this.destroyEnemy(enemyInstance);
+                }
+            });
     }
 
     getLastEnemy(): Enemy | null {
