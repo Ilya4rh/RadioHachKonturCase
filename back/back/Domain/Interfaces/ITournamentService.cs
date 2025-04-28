@@ -9,4 +9,5 @@ public interface ITournamentService
     Task<TournamentEntity> GetByIdAsync(Guid id);
 
     Task<Guid> AddAsync(TournamentEntity tournament);
+    Task<Guid> DeleteAsync(Guid id);
 }
