@@ -11,9 +11,12 @@ services:
   backend:
     build: ./back/back
     ports:
-      - "5000:5000"
+      - "5085:5085"
+    environment:
+      #- ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5085
     volumes:
-      - database_volume:/back/back/radioHack.db
+      - database_volume:/back/back/Application/radioHack.db
     restart: unless-stopped
 
 volumes:

@@ -59,7 +59,7 @@ export function Admin() {
 
     setTimeout(() => {
       setNotifications(prev => prev.filter(notification => notification.id !== id));
-    }, 5000);
+    }, 5085);
   };
 
   useEffect(() => {

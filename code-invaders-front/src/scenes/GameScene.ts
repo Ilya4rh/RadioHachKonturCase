@@ -138,7 +138,7 @@ export class GameScene extends Phaser.Scene
         });
 
         this.time.addEvent({
-            delay: 6000,
+            delay: 30000,
             callback: () => {
                 if (this.isGameOver) return;
 

@@ -41,7 +41,7 @@ export function TournamentDetails() {
 
     setTimeout(() => {
       setNotifications(prev => prev.filter(notification => notification.id !== id));
-    }, 5000);
+    },5085);
   };
 
   function formatDateTime(dateString: string): string {
