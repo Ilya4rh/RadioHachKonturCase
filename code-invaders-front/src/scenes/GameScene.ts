@@ -285,7 +285,8 @@ export class GameScene extends Phaser.Scene
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
-                            'accept': 'text/plain'
+                            'accept': 'text/plain',
+                            "Access-Control-Allow-Origin": "*"
                         },
                         body: JSON.stringify({
                             id: existingResultId,
@@ -316,7 +317,8 @@ export class GameScene extends Phaser.Scene
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'accept': 'text/plain'
+                            'accept': 'text/plain',
+                            "Access-Control-Allow-Origin": "*"
                         },
                         body: JSON.stringify({
                             tournamentId: this.tournamentId,

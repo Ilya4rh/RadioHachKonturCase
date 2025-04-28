@@ -25,7 +25,11 @@ export function Game() {
             setIsLoadingTournaments(true);
             setError(null);
             try {
-                const response = await fetch('http://51.250.71.162:5085/api/tournaments');
+                const response = await fetch('http://51.250.71.162:5085/api/tournaments', {
+                    headers: {
+                        "Access-Control-Allow-Origin": "*"
+                    }
+                });
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
