@@ -233,19 +233,6 @@ export function TournamentDetails() {
               <QRCodeSVG value={gameUrl} size={250} bgColor={'#1e1e1e'} fgColor={'#ffffff'} />
             </div>
           </div>
-          <Link
-              to={`/admin/`}
-              onClick={() => {
-                void fetch(`http://51.250.71.162:5085/api/tournaments/tournament/delete/${tournamentId}`, {
-                  headers: {
-                    "Access-Control-Allow-Origin": "*"
-                  }
-                });
-              }}
-              color={'red'}
-          >
-            Удалить
-          </Link>
         </div>
       </div>
     </div>
