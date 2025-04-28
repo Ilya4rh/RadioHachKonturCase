@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import programmer from "../images/programmer.png";
-import moon from "../images/moon.png";
 import coin from "../images/coin.png";
 import blue_bug from "../images/blue_bug.png";
 import {Enemy} from "../game-objects/Enemy";
@@ -15,7 +14,7 @@ import {UnitTestWaveBonus} from "../game-objects/UnitTestWaveBonus";
 import unit_test_wave from "../images/unit_test_wave.png";
 import {UnitTestWave} from "../game-objects/UnitTestWave";
 import {EnemyBullet} from "../game-objects/EnemyBullet";
-import star from "../images/star.png";
+import background from "../images/background.png";
 
 interface GameData {
     tournamentId: string;
@@ -60,7 +59,6 @@ export class GameScene extends Phaser.Scene
     preload ()
     {
         this.load.image('programmer', programmer);
-        this.load.image('moon', moon);
         this.load.image('coin', coin);
         this.load.image('blue_bug', blue_bug);
         this.load.image('bullet', bullet);
@@ -68,7 +66,7 @@ export class GameScene extends Phaser.Scene
         this.load.image('memory_leak', memory_leak);
         this.load.image('unit_test_wave_icon', unit_test_wave_icon);
         this.load.image('unit_test_wave', unit_test_wave);
-        this.load.image('star', star);
+        this.load.image('background', background);
     }
 
     create ()
@@ -76,15 +74,7 @@ export class GameScene extends Phaser.Scene
         this.children.removeAll();
         this.physics.world.colliders.destroy();
         this.time.removeAllEvents();
-
-        this.add.image(100, 600, 'star');
-        this.add.image(50, 1200, 'star');
-        this.add.image(1020, 200, 'star');
-        this.add.image(900, 1000, 'star');
-        this.add.image(200, 900, 'star');
-        this.add.image(440, 300, 'star');
-        this.add.image(500, 500, 'star');
-        this.add.image(700, 600, 'star');
+        this.add.image(550, 900, "background").setScale(2, 2);
         this.coinsCountText = this.add.text(940, 235, this.score.toString(), {fontSize: 64, align: "right"})
             .setOrigin(1, 0.5).setDepth(1);
         this.add.image(980, 230, "coin").setScale(0.5).setDepth(1);
