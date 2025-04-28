@@ -13,7 +13,7 @@ services:
     ports:
       - "5085:5085"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      #- ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5085
     volumes:
       - database_volume:/back/back/radioHack.db
