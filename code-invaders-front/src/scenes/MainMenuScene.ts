@@ -35,7 +35,7 @@ export class MainMenuScene extends Phaser.Scene
         this.add.image(100, 600, 'star');
         this.add.image(50, 1200, 'star');
         this.add.image(1020, 200, 'star');
-        this.add.image(900, 1000, 'star')
+        this.add.image(900, 1000, 'star');
         this.add.image(540, 1150, "start_button").setInteractive()
             .on('pointerdown', () => this.scene.start("GameScene"));
     }
