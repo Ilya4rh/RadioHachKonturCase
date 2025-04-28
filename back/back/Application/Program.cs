@@ -8,7 +8,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://51.250.71.162:80")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.AddTransient<ApplicationContext>();
+builder.Services.AddSingleton<ApplicationContext>();
 builder.Services.AddTransient<ITournamentService, TournamentService>();
 builder.Services.AddTransient<IGameResultService, GameResultService>();
 
