@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -32,6 +32,8 @@ export function TournamentDetails() {
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const effectRan = useRef(false);
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
   const addNotification = (message: string, type: 'error' | 'success') => {
     const id = generateUniqueId();
@@ -54,42 +56,67 @@ export function TournamentDetails() {
     return date.toLocaleString('ru-RU', options);
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      
-      if (!tournamentId) {
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        const resultsResponse = await fetch(`http://localhost:5085/api/gameResults/${tournamentId}`);
-        if (resultsResponse.ok) {
-          const resultsData = await resultsResponse.json();
-          setResults(resultsData);
-        } else {
-          const errorText = await resultsResponse.text();
-          addNotification(`Ошибка при загрузке результатов: ${errorText}`, 'error');
-        }
+  const fetchData = async (isInitialLoad = false) => {
+    if (isInitialLoad) {
+        setLoading(true);
+    }
 
-        const tournamentResponse = await fetch(`http://localhost:5085/api/tournaments/tournament/${tournamentId}`);
-        if (tournamentResponse.ok) {
-          const tournamentData = await tournamentResponse.json();
-          setTournament(tournamentData);
-        } else {
-          const errorText = await tournamentResponse.text();
-          addNotification(`Ошибка при загрузке информации о турнире: ${errorText}`, 'error');
-        }
-      } catch (error) {
-        console.error('Ошибка при загрузке данных:', error);
-        addNotification(`Ошибка при загрузке данных: ${error instanceof Error ? error.message : String(error)}`, 'error');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!tournamentId) {
+      setLoading(false);
+      return;
+    }
     
-    fetchData();
+    try {
+      const cacheBuster = `cacheBuster=${new Date().getTime()}`;
+      const [resultsResponse, tournamentResponse] = await Promise.all([
+        fetch(`http://localhost:5085/api/gameResults/${tournamentId}?${cacheBuster}`),
+        fetch(`http://localhost:5085/api/tournaments/tournament/${tournamentId}?${cacheBuster}`)
+      ]);
+
+      if (resultsResponse.ok) {
+        const resultsData = await resultsResponse.json();
+
+        setResults(resultsData);
+      } else {
+        const errorText = await resultsResponse.text();
+
+        addNotification(`Ошибка при загрузке результатов: ${errorText}`, 'error');
+      }
+
+      if (tournamentResponse.ok) {
+        const tournamentData = await tournamentResponse.json();
+
+        setTournament(tournamentData);
+      } else {
+        const errorText = await tournamentResponse.text();
+
+        addNotification(`Ошибка при загрузке информации о турнире: ${errorText}`, 'error');
+      }
+    } catch (error) {
+      addNotification(`Ошибка при загрузке данных: ${error instanceof Error ? error.message : String(error)}`, 'error');
+    } finally {
+      if (isInitialLoad) {
+          setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (effectRan.current === false && tournamentId) {
+        fetchData(true);
+
+        intervalIdRef.current = setInterval(() => fetchData(false), 30000);
+
+        effectRan.current = true;
+    }
+
+    return () => {
+        if (intervalIdRef.current) {
+            clearInterval(intervalIdRef.current);
+            intervalIdRef.current = null;
+        }
+        effectRan.current = false;
+    }
   }, [tournamentId]);
 
   const getRowStyle = (index: number) => {
@@ -108,11 +135,10 @@ export function TournamentDetails() {
     );
   }
 
-  const gameUrl = window.location.origin;
+  const gameUrl = `${window.location.origin}/?tid=${tournamentId}`;
 
   return (
     <div style={styles.container}>
-      {/* Уведомления */}
       <div style={styles.notificationsContainer}>
         {notifications.map(notification => (
           <div 

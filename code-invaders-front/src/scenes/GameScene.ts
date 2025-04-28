@@ -17,6 +17,11 @@ import {UnitTestWave} from "../game-objects/UnitTestWave";
 import {EnemyBullet} from "../game-objects/EnemyBullet";
 import star from "../images/star.png";
 
+interface GameData {
+    tournamentId: string;
+    playerName: string;
+}
+
 export class GameScene extends Phaser.Scene
 {
     programmer: Programmer | null;
@@ -24,14 +29,32 @@ export class GameScene extends Phaser.Scene
     enemiesSpawnCount: number;
     enemiesSpeed: number;
     coinsCountText: Phaser.GameObjects.Text | null;
+    score: number;
+    tournamentId: string | null;
+    playerName: string | null;
+    isGameOver: boolean;
 
     constructor() {
         super({key: "GameScene"});
         this.enemies = [];
         this.programmer = null;
         this.enemiesSpawnCount = 5;
-        this.enemiesSpeed = 50;
+        this.enemiesSpeed = 100;
         this.coinsCountText = null;
+        this.score = 0;
+        this.tournamentId = null;
+        this.playerName = null;
+        this.isGameOver = false;
+    }
+
+    init(data: GameData) {
+        this.tournamentId = data.tournamentId;
+        this.playerName = data.playerName;
+        this.score = 0;
+        this.enemies = [];
+        this.enemiesSpawnCount = 5;
+        this.enemiesSpeed = 100;
+        this.isGameOver = false;
     }
 
     preload ()
@@ -50,6 +73,10 @@ export class GameScene extends Phaser.Scene
 
     create ()
     {
+        this.children.removeAll();
+        this.physics.world.colliders.destroy();
+        this.time.removeAllEvents();
+
         this.add.image(100, 600, 'star');
         this.add.image(50, 1200, 'star');
         this.add.image(1020, 200, 'star');
@@ -58,122 +85,278 @@ export class GameScene extends Phaser.Scene
         this.add.image(440, 300, 'star');
         this.add.image(500, 500, 'star');
         this.add.image(700, 600, 'star');
-        this.coinsCountText = this.add.text(940, 235, "0", {fontSize: 64, align: "right"})
+        this.coinsCountText = this.add.text(940, 235, this.score.toString(), {fontSize: 64, align: "right"})
             .setOrigin(1, 0.5).setDepth(1);
         this.add.image(980, 230, "coin").setScale(0.5).setDepth(1);
         this.add.image(500, 1650, "moon").setScale(1.5);
 
         this.programmer = new Programmer(this, this.scale.width / 2, this.scale.height - 100);
+
+
         this.time.addEvent({
             delay: 700,
             callback: () => {
+                 if (this.isGameOver || !this.programmer || !this.programmer.active) return;
+
                 const newBullet = new Bullet(this, this.programmer!.x, this.programmer!.y);
-                this.physics.add.collider(newBullet, this.enemies,
+                this.physics.add.collider(newBullet, this.enemies.filter(e => e.active),
                     (bullet, enemy) => {
-                    bullet.destroy(true);
-                    this.destroyEnemy(enemy);
+                        const bulletInstance = bullet as Bullet;
+                        const enemyInstance = enemy as Enemy;
+                        if (bulletInstance.active && enemyInstance.active) {
+                           bulletInstance.destroy(true);
+                           this.destroyEnemy(enemyInstance);
+                        }
                 });
             },
             loop: true
         });
+
         this.time.addEvent({
             delay: 3000,
             callback: () => {
-                if (this.enemies.length > 0) {
-                    const shooter = this.enemies[Math.floor(Math.random() * this.enemies.length)];
-                    const newEnemyBullet = new EnemyBullet(this, shooter.x, shooter.y);
-                    this.physics.add.collider(newEnemyBullet, this.programmer!,
-                        (bullet, enemy) => {
-                            bullet.destroy(true);
-                            window.location.reload();
-                        });
+                 if (this.isGameOver) return;
+
+                const activeEnemies = this.enemies.filter(e => e.active && e.y > 0);
+                if (activeEnemies.length > 0) {
+                    const shooter = activeEnemies[Math.floor(Math.random() * activeEnemies.length)];
+                     if (shooter && this.programmer && this.programmer.active) { 
+                       const newEnemyBullet = new EnemyBullet(this, shooter.x, shooter.y);
+                       this.physics.add.collider(newEnemyBullet, this.programmer!,
+                           (bullet, programmer) => {
+                                const bulletInstance = bullet as EnemyBullet;
+                                const programmerInstance = programmer as Programmer;
+                               if (bulletInstance.active && programmerInstance.active) {
+                                 bulletInstance.destroy(true);
+                                 this.gameOver();
+                               }
+                           });
+                     }
                 }
             },
             loop: true
         });
+
         this.time.addEvent({
             delay: 6000,
             callback: () => {
+                if (this.isGameOver) return;
+
                 const randomBonusNumber = Math.floor(Math.random() * 2);
                 if (randomBonusNumber === 0){
                     const leak = new MemoryLeak(this);
                     this.physics.add.collider(leak, this.programmer!,
-                        (a, b) => {
-                            a.destroy(true);
-                            this.enemies.filter(x => x.y > 0).forEach(x => x.update(this.time.now, 0));
+                        (leakBonus, programmer) => {
+                             const leakInstance = leakBonus as MemoryLeak;
+                             const programmerInstance = programmer as Programmer;
+                             if (leakInstance.active && programmerInstance.active) {
+                                leakInstance.destroy(true);
+                                this.enemies.filter(x => x.active && x.y > 0).forEach(x => {
+                                    if (x.body instanceof Phaser.Physics.Arcade.Body) {
+                                        x.body.setVelocityY(0);
+                                    }
+                                });
+                             }
                     });
                 }
                 if (randomBonusNumber === 1){
-                    const leak = new UnitTestWaveBonus(this);
-                    this.physics.add.collider(leak, this.programmer!,
-                        (a, b) => {
-                            a.destroy(true);
-                            const wave = new UnitTestWave(this);
-                            this.physics.add.collider(wave, this.enemies,
-                                (_, enemy) => {
-                                    this.destroyEnemy(enemy);
-                            });
+                    const bonus = new UnitTestWaveBonus(this);
+                    this.physics.add.collider(bonus, this.programmer!,
+                        (waveBonus, programmer) => {
+                            const bonusInstance = waveBonus as UnitTestWaveBonus;
+                            const programmerInstance = programmer as Programmer;
+                            if (bonusInstance.active && programmerInstance.active) {
+                               bonusInstance.destroy(true);
+                               const wave = new UnitTestWave(this);
+                               this.physics.add.collider(wave, this.enemies.filter(e => e.active),
+                                   (waveInstance, enemy) => {
+                                        const waveObj = waveInstance as UnitTestWave;
+                                        const enemyInstance = enemy as Enemy;
+                                       if (waveObj.active && enemyInstance.active) {
+                                        this.destroyEnemy(enemyInstance);
+                                       }
+                               });
+                            }
                     });
                 }
             },
             loop: true
         });
+
         this.addEnemies(this.enemiesSpawnCount);
     }
 
     addEnemies(count: number) {
+        if (this.isGameOver) return;
+
         for(let i = 0; i < count; i++) {
+            let newEnemy: Enemy | null = null;
             if (this.enemies.length > 0){
                 const lastEnemy = this.getLastEnemy();
-                if (lastEnemy.x + 30 > this.scale.width - 300)
-                    this.enemies.push(new Enemy(this, 150, lastEnemy.y - 200, this.enemiesSpeed))
-                else
-                    this.enemies.push(new Enemy(this, lastEnemy.x + 200, lastEnemy.y, this.enemiesSpeed))
+                if (lastEnemy) {
+                    if (lastEnemy.x + 200 > this.scale.width - 100) {
+                        newEnemy = new Enemy(this, 150, lastEnemy.y - 200, this.enemiesSpeed);
+                    } else {
+                        newEnemy = new Enemy(this, lastEnemy.x + 200, lastEnemy.y, this.enemiesSpeed);
+                    }
+                 } else {
+                     newEnemy = new Enemy(this, 150, -50, this.enemiesSpeed);
+                 }
             }
             else{
-                this.enemies.push(new Enemy(this, 150, -50, this.enemiesSpeed))
+                 newEnemy = new Enemy(this, 150, -50, this.enemiesSpeed);
             }
+
+             if (newEnemy) {
+                this.enemies.push(newEnemy);
+                this.physics.add.collider(this.programmer!, newEnemy, (programmer, enemy) => {
+                     const programmerInstance = programmer as Programmer;
+                     const enemyInstance = enemy as Enemy;
+                     if (programmerInstance.active && enemyInstance.active) {
+                        this.gameOver();
+                     }
+                });
+             }
         }
-        const bullets = this.children.list
-            .filter(obj => obj instanceof Bullet);
-        this.physics.add.collider(bullets, this.enemies,
-            (bullet, enemy) => {
-                bullet.destroy(true);
-                this.destroyEnemy(enemy);
-            });
-        const waves = this.children.list
-            .filter(obj => obj instanceof UnitTestWave);
-        this.physics.add.collider(waves, this.enemies,
-            (_, enemy) => {
-                this.destroyEnemy(enemy);
-            });
-        this.physics.add.collider(this.programmer!, this.enemies, () => window.location.reload());
     }
 
-    getLastEnemy(): Enemy {
-        return this.enemies.reduce(function(prev, curr) {
-            if (prev.y > curr.y)
-                return curr;
-            if (prev.y < curr.y)
-                return prev;
+    getLastEnemy(): Enemy | null {
+        const activeEnemies = this.enemies.filter(e => e.active);
+        if (activeEnemies.length === 0) return null;
+
+        return activeEnemies.reduce((prev, curr) => {
+            if (prev.y > curr.y) return curr;
+            if (prev.y < curr.y) return prev;
             return prev.x > curr.x ? prev : curr;
         });
     }
 
     update(time: number, delta: number) {
-        this.children.list.forEach(x => x.update(time));
+         if (this.isGameOver) return;
+
+        this.children.list.forEach(x => {
+             if (typeof (x as any).update === 'function') {
+                 (x as any).update(time);
+             }
+        });
+
+         this.enemies.forEach(enemy => {
+             if (enemy.active && enemy.y > this.scale.height - 50) {
+                 this.gameOver();
+             }
+         });
     }
 
-    destroyEnemy(enemy:  Phaser.Physics.Arcade.Body |
-        Phaser.Physics.Arcade.StaticBody |
-        Phaser.Tilemaps.Tile | Phaser.Types.Physics.Arcade.GameObjectWithBody){
+    destroyEnemy(enemy: Enemy){
+         if (!enemy.active || this.isGameOver) return;
+
         enemy.destroy(true);
-        this.coinsCountText!.setText((parseInt(this.coinsCountText!.text) + 10).toString());
-        this.enemies = this.enemies.filter(x => x !== enemy);
-        if (this.enemies.length === 0){
+        this.score += 10;
+        this.coinsCountText!.setText(this.score.toString());
+
+        const activeEnemies = this.enemies.filter(e => e.active);
+        if (activeEnemies.length === 0){
             this.enemiesSpeed += 10;
             this.enemiesSpawnCount += 1;
             this.addEnemies(this.enemiesSpawnCount);
         }
+    }
+
+    async gameOver() {
+         if (this.isGameOver) return;
+
+        this.isGameOver = true;
+        this.physics.pause();
+        if (this.programmer) this.programmer.setActive(false).setVisible(false);
+
+        this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Game Over', { fontSize: '96px', color: '#ff0000', align: 'center' }).setOrigin(0.5);
+        this.add.text(this.scale.width / 2, this.scale.height / 2, `Ваш счет: ${this.score}`, { fontSize: '48px', color: '#ffffff', align: 'center' }).setOrigin(0.5);
+
+        if (this.tournamentId && this.playerName) {
+            const storageKey = `gameResult_${this.tournamentId}_${this.playerName}`;
+            const existingResultId = localStorage.getItem(storageKey);
+
+
+
+            if (existingResultId) {
+
+                try {
+                    const response = await fetch('http://localhost:5085/api/gameResults/change', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'accept': 'text/plain'
+                        },
+                        body: JSON.stringify({
+                            id: existingResultId,
+                            tournamentId: this.tournamentId,
+                            playerName: this.playerName,
+                            numberOfPoints: this.score,
+                        }),
+                    });
+
+                    if (response.ok) {
+
+                        this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Результат обновлен!', { fontSize: '24px', color: '#ccffcc', align: 'center' }).setOrigin(0.5);
+                    } else {
+                        const errorText = await response.text();
+
+                        this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Не удалось обновить результат.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
+
+                    }
+                } catch (error) {
+
+                    this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Ошибка сети при обновлении.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
+                }
+
+            } else {
+
+                try {
+                    const response = await fetch('http://localhost:5085/api/gameResults/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'accept': 'text/plain'
+                        },
+                        body: JSON.stringify({
+                            tournamentId: this.tournamentId,
+                            playerName: this.playerName,
+                            numberOfPoints: this.score,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const newResultId = await response.text();
+
+                        localStorage.setItem(storageKey, newResultId);
+
+                         this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Результат сохранен!', { fontSize: '24px', color: '#ccffcc', align: 'center' }).setOrigin(0.5);
+                    } else {
+                        const errorText = await response.text();
+
+                        this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Не удалось сохранить результат.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
+                    }
+                } catch (error) {
+
+                    this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Ошибка сети при сохранении.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
+                }
+            }
+        } else {
+
+             this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Ошибка: Не найдены данные турнира/игрока.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
+        }
+
+         const backButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 250, 'В главное меню', {
+             fontSize: '40px',
+             color: '#00ff00',
+             backgroundColor: '#333333',
+             padding: { x: 20, y: 10 },
+             align: 'center'
+         })
+         .setOrigin(0.5)
+         .setInteractive({ useHandCursor: true })
+         .on('pointerdown', () => {
+             this.scene.start('MainMenuScene');
+         });
     }
 }

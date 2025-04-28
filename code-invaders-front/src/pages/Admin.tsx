@@ -67,17 +67,15 @@ export function Admin() {
   }, []);
 
   const fetchTournaments = async () => {
+    setLoading(true);
     try {
       const response = await fetch('http://localhost:5085/api/tournaments');
-      if (response.ok) {
-        const data = await response.json();
-        setTournaments(data);
-      } else {
-        const errorText = await response.text();
-        addNotification(`Ошибка при загрузке турниров: ${errorText}`, 'error');
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
       }
+      const data = await response.json();
+      setTournaments(data);
     } catch (error) {
-      console.error('Ошибка при загрузке турниров:', error);
       addNotification(`Ошибка при загрузке турниров: ${error instanceof Error ? error.message : String(error)}`, 'error');
     } finally {
       setLoading(false);
@@ -123,11 +121,9 @@ export function Admin() {
         addNotification('Турнир успешно создан', 'success');
       } else {
         const errorText = await response.text();
-        console.error('Ошибка при создании турнира:', errorText);
         addNotification(`Ошибка при создании турнира: ${errorText}`, 'error');
       }
     } catch (error) {
-      console.error('Ошибка при создании турнира:', error);
       addNotification(`Ошибка при создании турнира: ${error instanceof Error ? error.message : String(error)}`, 'error');
     }
   };
