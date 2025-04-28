@@ -69,7 +69,11 @@ export function Admin() {
   const fetchTournaments = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://51.250.71.162:5085/api/tournaments');
+      const response = await fetch('http://51.250.71.162:5085/api/tournaments', {
+        headers: {
+          "Access-Control-Allow-Origin": "*"
+        }
+      });
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.statusText}`);
       }
@@ -101,7 +105,8 @@ export function Admin() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'accept': 'text/plain'
+          'accept': 'text/plain',
+          "Access-Control-Allow-Origin": "*"
         },
         body: JSON.stringify({
           name: formData.name,
