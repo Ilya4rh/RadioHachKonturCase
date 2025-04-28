@@ -281,7 +281,7 @@ export class GameScene extends Phaser.Scene
             if (existingResultId) {
 
                 try {
-                    const response = await fetch('http://localhost:5085/api/gameResults/change', {
+                    const response = await fetch('http://51.250.71.162:5085/api/gameResults/change', {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -312,7 +312,7 @@ export class GameScene extends Phaser.Scene
             } else {
 
                 try {
-                    const response = await fetch('http://localhost:5085/api/gameResults/create', {
+                    const response = await fetch('http://51.250.71.162:5085/api/gameResults/create', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

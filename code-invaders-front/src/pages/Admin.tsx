@@ -69,7 +69,7 @@ export function Admin() {
   const fetchTournaments = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5085/api/tournaments');
+      const response = await fetch('http://51.250.71.162:5085/api/tournaments');
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.statusText}`);
       }
@@ -97,7 +97,7 @@ export function Admin() {
         return;
       }
       
-      const response = await fetch('http://localhost:5085/api/tournaments/tournament/create', {
+      const response = await fetch('http://51.250.71.162:5085/api/tournaments/tournament/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
