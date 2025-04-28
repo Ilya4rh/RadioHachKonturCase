@@ -78,7 +78,6 @@ export class GameScene extends Phaser.Scene
         this.coinsCountText = this.add.text(940, 235, this.score.toString(), {fontSize: 64, align: "right"})
             .setOrigin(1, 0.5).setDepth(1);
         this.add.image(980, 230, "coin").setScale(0.5).setDepth(1);
-        this.add.image(500, 1650, "moon").setScale(1.5);
 
         this.programmer = new Programmer(this, this.scale.width / 2, this.scale.height - 100);
 
