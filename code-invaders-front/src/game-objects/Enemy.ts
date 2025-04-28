@@ -11,8 +11,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.#inititalX = x;
     }
 
-    update(time: number, delta: number) {
+    update(time: number, speed?: number) {
         const waveY = Math.sin(time * 0.002) * 50;
         this.x = this.#inititalX + waveY;
+        if (speed !== undefined)
+            this.setVelocity(speed);
     }
 }

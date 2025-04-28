@@ -3,6 +3,7 @@ export class Programmer extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, "programmer");
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.body!.pushable = false;
         this.setInteractive({
             draggable: true
         });
