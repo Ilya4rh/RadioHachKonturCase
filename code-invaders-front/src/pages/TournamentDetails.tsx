@@ -69,8 +69,8 @@ export function TournamentDetails() {
     try {
       const cacheBuster = `cacheBuster=${new Date().getTime()}`;
       const [resultsResponse, tournamentResponse] = await Promise.all([
-        fetch(`http://localhost:5085/api/gameResults/${tournamentId}?${cacheBuster}`),
-        fetch(`http://localhost:5085/api/tournaments/tournament/${tournamentId}?${cacheBuster}`)
+        fetch(`http://51.250.71.162:5085/api/gameResults/${tournamentId}?${cacheBuster}`),
+        fetch(`http://51.250.71.162:5085/api/tournaments/tournament/${tournamentId}?${cacheBuster}`)
       ]);
 
       if (resultsResponse.ok) {
