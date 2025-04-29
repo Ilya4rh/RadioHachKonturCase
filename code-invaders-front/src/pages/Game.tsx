@@ -76,7 +76,7 @@ export function Game() {
     }, [isLoadingTournaments, tournaments, error, location.search]);
 
     return (
-        <div style={{ backgroundColor: '#09022E', position: 'relative', width: '100%', height: '100%' }}>
+        <div style={{ backgroundColor: '#09022E', position: 'absolute', bottom: '0', width: '100%', height: '100%' }}>
             <div ref={phaserContainerRef} id="phaser-container" style={{ width: '100%', height: '100%' }} />
 
              {isLoadingTournaments && <p style={{position: 'absolute', top: '10px', left: '10px', color: 'white'}}>Загрузка турниров...</p>}
