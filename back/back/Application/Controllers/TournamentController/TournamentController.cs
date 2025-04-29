@@ -27,6 +27,15 @@ public class TournamentController : ControllerBase
         return Ok(tournaments.Select(tournament => tournament.ToResponse()).ToList());
     }
 
+    [HttpGet("actual")]
+    [ProducesResponseType<List<TournamentResponse>>(200)]
+    public async Task<IActionResult> GetActualTournaments()
+    {
+        var tournaments = await _tournamentService.GetActualTournaments();
+        
+        return Ok(tournaments.Select(tournament => tournament.ToResponse()).ToList());
+    }
+
     [HttpGet("tournament/{id:guid}")]
     [ProducesResponseType<TournamentResponse>(200)]
     public async Task<IActionResult> GetTournament(Guid id)

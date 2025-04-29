@@ -19,10 +19,17 @@ public class TournamentService : ITournamentService
         var tournaments = await _context.Tournaments.ToListAsync();
 
         return tournaments;
-        // .Where(tournament => tournament.DateTimeStart <= DateTime.Now && tournament.DateTimeEnd > DateTime.Now)
-        // .ToList();
     }
 
+    public async Task<List<TournamentEntity>> GetActualTournaments()
+    {
+        var tournaments = await _context.Tournaments.ToListAsync();
+        
+        return tournaments
+            .Where(tournament => tournament.DateTimeStart <= DateTime.Now && tournament.DateTimeEnd > DateTime.Now)
+            .ToList();
+    }
+    
     public async Task<TournamentEntity> GetByIdAsync(Guid id)
     {
         var tournament = await _context.Tournaments.FirstOrDefaultAsync(t => t.Id == id);
