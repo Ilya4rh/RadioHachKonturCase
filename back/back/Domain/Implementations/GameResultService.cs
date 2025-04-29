@@ -32,11 +32,11 @@ public class GameResultService : IGameResultService
 
         if (foundGameResults != null)
         {
-            gameResultEntity = gameResultEntity with { Id = foundGameResults.Id };
+            foundGameResults.NumberOfPoints = gameResultEntity.NumberOfPoints;
 
-            await ChangeGameResult(gameResultEntity);
+            await ChangeGameResult(foundGameResults);
 
-            return gameResultEntity.Id;
+            return foundGameResults.Id;
         }
         
         var newGameResult = await _context.GameResults.AddAsync(gameResultEntity);

@@ -2,11 +2,11 @@
 
 public record GameResultEntity
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
     
-    public Guid TournamentId { get; init; }
+    public Guid TournamentId { get; set; }
     
-    public string? PlayerName { get; init; }
+    public string? PlayerName { get; set; }
     
-    public int NumberOfPoints { get; init; }
+    public int NumberOfPoints { get; set; }
 }
