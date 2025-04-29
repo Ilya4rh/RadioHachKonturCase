@@ -282,75 +282,31 @@ export class GameScene extends Phaser.Scene
         this.add.text(this.scale.width / 2, this.scale.height / 2, `Ваш счет: ${this.score}`, { fontSize: '48px', color: '#ffffff', align: 'center' }).setOrigin(0.5);
 
         if (this.tournamentId && this.playerName) {
-            const storageKey = `gameResult_${this.tournamentId}_${this.playerName}`;
-            const existingResultId = localStorage.getItem(storageKey);
+            try {
+                const response = await fetch('http://51.250.71.162:5085/api/gameResults/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'text/plain',
+                        "Access-Control-Allow-Origin": "*"
+                    },
+                    body: JSON.stringify({
+                        tournamentId: this.tournamentId,
+                        playerName: this.playerName,
+                        numberOfPoints: this.score,
+                    }),
+                });
 
+                if (response.ok) {
+                    this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Результат сохранен!', { fontSize: '24px', color: '#ccffcc', align: 'center' }).setOrigin(0.5);
+                } else {
+                    const errorText = await response.text();
 
-
-            if (existingResultId) {
-
-                try {
-                    const response = await fetch('http://51.250.71.162:5085/api/gameResults/change', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'accept': 'text/plain',
-                            "Access-Control-Allow-Origin": "*"
-                        },
-                        body: JSON.stringify({
-                            id: existingResultId,
-                            tournamentId: this.tournamentId,
-                            playerName: this.playerName,
-                            numberOfPoints: this.score,
-                        }),
-                    });
-
-                    if (response.ok) {
-
-                        this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Результат обновлен!', { fontSize: '24px', color: '#ccffcc', align: 'center' }).setOrigin(0.5);
-                    } else {
-                        const errorText = await response.text();
-
-                        this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Не удалось обновить результат.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
-
-                    }
-                } catch (error) {
-
-                    this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Ошибка сети при обновлении.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
+                    this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Не удалось сохранить результат.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
                 }
+            } catch (error) {
 
-            } else {
-
-                try {
-                    const response = await fetch('http://51.250.71.162:5085/api/gameResults/create', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'accept': 'text/plain',
-                            "Access-Control-Allow-Origin": "*"
-                        },
-                        body: JSON.stringify({
-                            tournamentId: this.tournamentId,
-                            playerName: this.playerName,
-                            numberOfPoints: this.score,
-                        }),
-                    });
-
-                    if (response.ok) {
-                        const newResultId = await response.text();
-
-                        localStorage.setItem(storageKey, newResultId);
-
-                         this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Результат сохранен!', { fontSize: '24px', color: '#ccffcc', align: 'center' }).setOrigin(0.5);
-                    } else {
-                        const errorText = await response.text();
-
-                        this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Не удалось сохранить результат.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
-                    }
-                } catch (error) {
-
-                    this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Ошибка сети при сохранении.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
-                }
+                this.add.text(this.scale.width / 2, this.scale.height / 2 + 150, 'Ошибка сети при сохранении.', { fontSize: '24px', color: '#ffdddd', align: 'center' }).setOrigin(0.5);
             }
         } else {
 
