@@ -26,6 +26,19 @@ public class GameResultService : IGameResultService
 
     public async Task<Guid> AddGameResult(GameResultEntity gameResultEntity)
     {
+        var foundGameResults = await _context.GameResults.FirstOrDefaultAsync(gameResult =>
+            gameResult.PlayerName == gameResultEntity.PlayerName &&
+            gameResult.TournamentId == gameResultEntity.TournamentId);
+
+        if (foundGameResults != null)
+        {
+            gameResultEntity = gameResultEntity with { Id = foundGameResults.Id };
+
+            await ChangeGameResult(gameResultEntity);
+
+            return gameResultEntity.Id;
+        }
+        
         var newGameResult = await _context.GameResults.AddAsync(gameResultEntity);
 
         await _context.SaveChangesAsync();
