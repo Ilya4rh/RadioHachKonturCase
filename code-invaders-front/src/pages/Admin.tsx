@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+const deleteIcon = require('../images/delete-button-svgrepo-com.svg').default;
 
 interface Tournament {
   id: string;
@@ -133,6 +134,30 @@ export function Admin() {
     }
   };
 
+  const handleDeleteTournament = async (tournamentId: string, tournamentName: string) => {
+    if (window.confirm(`Вы уверены, что хотите удалить турнир "${tournamentName}"?`)) {
+      try {
+        const response = await fetch(`http://51.250.71.162:5085/api/tournaments/tournament/delete/${tournamentId}`, {
+          method: 'DELETE',
+          headers: {
+            'accept': 'text/plain',
+            "Access-Control-Allow-Origin": "*"
+          }
+        });
+
+        if (response.ok) {
+          setTournaments(prev => prev.filter(t => t.id !== tournamentId));
+          addNotification('Турнир успешно удален', 'success');
+        } else {
+          const errorText = await response.text();
+          addNotification(`Ошибка при удалении турнира: ${errorText || response.statusText}`, 'error');
+        }
+      } catch (error) {
+        addNotification(`Ошибка при удалении турнира: ${error instanceof Error ? error.message : String(error)}`, 'error');
+      }
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -186,13 +211,23 @@ export function Admin() {
         ) : (
           <ul style={styles.tournamentList}>
             {tournaments.map(tournament => (
-              <li key={tournament.id} style={styles.tournamentItem}>
-                <Link 
-                  to={`/admin/tournament/${tournament.id}`}
-                  style={styles.tournamentLink}
-                >
-                  <div>
+              <li key={tournament.id} style={styles.tournamentItemContainer}>
+                <Link to={`/admin/tournament/${tournament.id}`} style={styles.tournamentLinkWrapper}>
+                  <div style={styles.tournamentHeader}>
                     <h3 style={styles.tournamentName}>{tournament.name}</h3>
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDeleteTournament(tournament.id, tournament.name);
+                      }}
+                      style={styles.deleteButton}
+                      title="Удалить турнир"
+                    >
+                      <img src={deleteIcon} alt="Удалить" style={styles.deleteIcon} />
+                    </button>
+                  </div>
+                  <div>
                     <p style={styles.tournamentDate}>
                       Дата начала: {formatDateTime(tournament.dateTimeStart)}
                     </p>
@@ -312,22 +347,37 @@ const styles = {
     gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
     gap: '20px'
   },
-  tournamentItem: {
+  tournamentItemContainer: {
     padding: '20px',
     backgroundColor: '#1e1e1e',
     border: '1px solid #333',
     borderRadius: '6px',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    cursor: 'pointer'
+    transition: 'transform 0.2s, box-shadow 0.2s'
+  },
+  tournamentLinkWrapper: {
+    display: 'block',
+    textDecoration: 'none',
+    color: 'inherit'
+  },
+  tournamentHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '10px'
   },
   tournamentLink: {
     textDecoration: 'none',
-    color: 'inherit'
+    color: '#888',
+    fontStyle: 'italic'
   },
   tournamentName: {
     margin: '0 0 10px 0',
     color: '#fff',
-    fontSize: '1.2rem'
+    fontSize: '1.2rem',
+    overflowWrap: 'break-word' as const,
+    wordBreak: 'break-word' as const,
+    minWidth: 0,
+    marginRight: '10px'
   },
   tournamentDate: {
     margin: 0,
@@ -461,5 +511,18 @@ const styles = {
     fontSize: '1.2rem',
     cursor: 'pointer',
     marginLeft: '15px'
+  },
+  deleteButton: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '5px',
+    lineHeight: '1',
+    marginLeft: '10px'
+  },
+  deleteIcon: {
+    width: '20px',
+    height: '20px',
+    filter: 'invert(40%) sepia(81%) saturate(1009%) hue-rotate(326deg) brightness(101%) contrast(101%)'
   }
 } 
