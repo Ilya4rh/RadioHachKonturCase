@@ -1,5 +1,6 @@
 using ClassLibrary1.Implementations;
 using ClassLibrary1.Interfaces;
+using ClassLibrary1.Models;
 using Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,9 @@ builder.Services.AddControllers();
 builder.Services.AddTransient<ApplicationContext>();
 builder.Services.AddTransient<ITournamentService, TournamentService>();
 builder.Services.AddTransient<IGameResultService, GameResultService>();
+
+builder.Configuration.AddJsonFile("secrets.json");
+builder.Services.Configure<Admin>(builder.Configuration);
 
 var app = builder.Build();
 
