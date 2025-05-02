@@ -7,7 +7,7 @@ using WebApi.Controllers.AuthenticationController.Responses;
 
 namespace WebApi.Controllers.AuthenticationController;
 
-[Route("[controller]")]
+[Route("api/authentication")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IOptions<Admin> _admin;
