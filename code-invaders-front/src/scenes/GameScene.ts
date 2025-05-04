@@ -15,6 +15,14 @@ import unit_test_wave from "../images/unit_test_wave.png";
 import {UnitTestWave} from "../game-objects/UnitTestWave";
 import {EnemyBullet} from "../game-objects/EnemyBullet";
 import background from "../images/background.png";
+import red_bug_for_menu from "../images/red_bug_for_menu.png";
+import blue_bug_1 from "../images/blue_bug1.png";
+import blue_bug_2 from "../images/blue_bug2.png";
+import blue_bug_3 from "../images/blue_bug3.png";
+import explosion_1 from "../images/explosion1.png";
+import explosion_2 from "../images/explosion2.png";
+import explosion_3 from "../images/explosion3.png";
+import explosion_4 from "../images/explosion4.png";
 
 interface GameData {
     tournamentId: string;
@@ -61,12 +69,20 @@ export class GameScene extends Phaser.Scene
         this.load.image('programmer', programmer);
         this.load.image('coin', coin);
         this.load.image('blue_bug', blue_bug);
+        this.load.image('blue_bug1', blue_bug_1);
+        this.load.image('blue_bug2', blue_bug_2);
+        this.load.image('blue_bug3', blue_bug_3);
         this.load.image('bullet', bullet);
         this.load.image('enemy_bullet', enemy_bullet);
         this.load.image('memory_leak', memory_leak);
         this.load.image('unit_test_wave_icon', unit_test_wave_icon);
         this.load.image('unit_test_wave', unit_test_wave);
         this.load.image('background', background);
+        this.load.image('red_bug_for_menu', red_bug_for_menu);
+        this.load.image('explosion1', explosion_1);
+        this.load.image('explosion2', explosion_2);
+        this.load.image('explosion3', explosion_3);
+        this.load.image('explosion4', explosion_4);
     }
 
     create ()
@@ -173,6 +189,18 @@ export class GameScene extends Phaser.Scene
         });
 
         this.addEnemies(this.enemiesSpawnCount);
+
+    this.anims.create({
+        key: 'explode_anim',
+        frames: [
+            { key: 'explosion1' },
+            { key: 'explosion2' },
+            { key: 'explosion3' },
+            { key: 'explosion4' },
+        ],
+        frameRate: 12,
+        repeat: 0
+    });
     }
 
     addEnemies(count: number) {
@@ -260,6 +288,7 @@ export class GameScene extends Phaser.Scene
          if (!enemy.active || this.isGameOver) return;
 
         enemy.destroy(true);
+        this.createExplosion(enemy.x, enemy.y);
         this.score += 10;
         this.coinsCountText!.setText(this.score.toString());
 
@@ -325,5 +354,15 @@ export class GameScene extends Phaser.Scene
          .on('pointerdown', () => {
              this.scene.start('MainMenuScene');
          });
+    }
+
+    private createExplosion(x: number, y: number) {
+        const explosion = this.add.sprite(x, y, 'programmer');
+        
+        explosion.play('explode_anim');
+        
+        explosion.once('animationcomplete', () => {
+            explosion.destroy();
+        });
     }
 }
