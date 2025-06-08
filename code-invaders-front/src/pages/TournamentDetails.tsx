@@ -69,12 +69,12 @@ export function TournamentDetails() {
     try {
       const cacheBuster = `cacheBuster=${new Date().getTime()}`;
       const [resultsResponse, tournamentResponse] = await Promise.all([
-        fetch(`http://51.250.34.126:5085/api/gameResults/${tournamentId}?${cacheBuster}`, {
+        fetch(`http://158.160.49.96:5085/api/gameResults/${tournamentId}?${cacheBuster}`, {
           headers: {
             "Access-Control-Allow-Origin": "*"
           }
         }),
-        fetch(`http://51.250.34.126:5085/api/tournaments/tournament/${tournamentId}?${cacheBuster}`, {
+        fetch(`http://158.160.49.96:5085/api/tournaments/tournament/${tournamentId}?${cacheBuster}`, {
           headers: {
             "Access-Control-Allow-Origin": "*"
           }
