@@ -98,7 +98,7 @@ export const Login = () => {
         setError('');
 
         try {
-            const apiUrl = 'http://51.250.10.101:5085/api/authentication/authenticate';
+            const apiUrl = 'http://158.160.49.96:5085/api/authentication/authenticate';
             
             const response = await fetch(apiUrl, {
                 method: 'POST',
