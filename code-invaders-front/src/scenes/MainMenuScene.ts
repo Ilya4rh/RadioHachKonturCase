@@ -21,12 +21,12 @@ export class MainMenuScene extends Phaser.Scene
 
     preload ()
     {
-        this.load.image('code_title', code_title);
-        this.load.image('invaders_title', invaders_title);
-        this.load.image('start_button', start_button);
-        this.load.image('blue_bug_for_menu', blue_bug_for_menu);
-        this.load.image('red_bug_for_menu', red_bug_for_menu);
-        this.load.image('background', background);
+        this.load.image('code_title', "https://storage.yandexcloud.net/teammate-finder-app-bucket/code_title.png");
+        this.load.image('invaders_title', "https://storage.yandexcloud.net/teammate-finder-app-bucket/invaders_title.png");
+        this.load.image('start_button', "https://storage.yandexcloud.net/teammate-finder-app-bucket/start_button.png");
+        this.load.image('blue_bug_for_menu', "https://storage.yandexcloud.net/teammate-finder-app-bucket/blue_bug_for_menu.png");
+        this.load.image('red_bug_for_menu', "https://storage.yandexcloud.net/teammate-finder-app-bucket/red_bug_for_menu.png");
+        this.load.image('background', "https://storage.yandexcloud.net/teammate-finder-app-bucket/background.png");
     }
 
     create ()

@@ -14,7 +14,7 @@ import {UnitTestWaveBonus} from "../game-objects/UnitTestWaveBonus";
 import unit_test_wave from "../images/unit_test_wave.png";
 import {UnitTestWave} from "../game-objects/UnitTestWave";
 import {EnemyBullet} from "../game-objects/EnemyBullet";
-import background from "../images/background.png";
+//import background from "../images/background.png";
 import red_bug_for_menu from "../images/red_bug_for_menu.png";
 import blue_bug_1 from "../images/blue_bug1.png";
 import blue_bug_2 from "../images/blue_bug2.png";
@@ -66,23 +66,23 @@ export class GameScene extends Phaser.Scene
 
     preload ()
     {
-        this.load.image('programmer', programmer);
-        this.load.image('coin', coin);
-        this.load.image('blue_bug', blue_bug);
-        this.load.image('blue_bug1', blue_bug_1);
-        this.load.image('blue_bug2', blue_bug_2);
-        this.load.image('blue_bug3', blue_bug_3);
-        this.load.image('bullet', bullet);
-        this.load.image('enemy_bullet', enemy_bullet);
-        this.load.image('memory_leak', memory_leak);
-        this.load.image('unit_test_wave_icon', unit_test_wave_icon);
-        this.load.image('unit_test_wave', unit_test_wave);
-        this.load.image('background', background);
-        this.load.image('red_bug_for_menu', red_bug_for_menu);
-        this.load.image('explosion1', explosion_1);
-        this.load.image('explosion2', explosion_2);
-        this.load.image('explosion3', explosion_3);
-        this.load.image('explosion4', explosion_4);
+        this.load.image('programmer', "https://storage.yandexcloud.net/teammate-finder-app-bucket/programmer.png");
+        this.load.image('coin', "https://storage.yandexcloud.net/teammate-finder-app-bucket/coin.png");
+        this.load.image('blue_bug', "https://storage.yandexcloud.net/teammate-finder-app-bucket/blue_bug.png");
+        this.load.image('blue_bug1', "https://storage.yandexcloud.net/teammate-finder-app-bucket/blue_bug1.png");
+        this.load.image('blue_bug2', "https://storage.yandexcloud.net/teammate-finder-app-bucket/blue_bug2.png");
+        this.load.image('blue_bug3', "https://storage.yandexcloud.net/teammate-finder-app-bucket/blue_bug3.png");
+        this.load.image('bullet', "https://storage.yandexcloud.net/teammate-finder-app-bucket/bullet.png");
+        this.load.image('enemy_bullet', "https://storage.yandexcloud.net/teammate-finder-app-bucket/enemy_bullet.png");
+        this.load.image('memory_leak', "https://storage.yandexcloud.net/teammate-finder-app-bucket/memory_leak.png");
+        this.load.image('unit_test_wave_icon', "https://storage.yandexcloud.net/teammate-finder-app-bucket/unit_test_wave_icon.png");
+        this.load.image('unit_test_wave', "https://storage.yandexcloud.net/teammate-finder-app-bucket/unit_test_wave.png");
+        this.load.image('background', "https://storage.yandexcloud.net/teammate-finder-app-bucket/background.png");
+        this.load.image('red_bug_for_menu', "https://storage.yandexcloud.net/teammate-finder-app-bucket/red_bug_for_menu.png");
+        this.load.image('explosion1', "https://storage.yandexcloud.net/teammate-finder-app-bucket/explosion1.png");
+        this.load.image('explosion2', "https://storage.yandexcloud.net/teammate-finder-app-bucket/explosion2.png");
+        this.load.image('explosion3', "https://storage.yandexcloud.net/teammate-finder-app-bucket/explosion3.png");
+        this.load.image('explosion4', "https://storage.yandexcloud.net/teammate-finder-app-bucket/explosion4.png");
     }
 
     create ()
