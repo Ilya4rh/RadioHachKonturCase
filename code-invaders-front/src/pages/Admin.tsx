@@ -70,7 +70,7 @@ export function Admin() {
   const fetchTournaments = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://84.201.156.127:5085/api/tournaments', {
+      const response = await fetch('http://51.250.34.126:5085/api/tournaments', {
         headers: {
           "Access-Control-Allow-Origin": "*"
         }
@@ -102,7 +102,7 @@ export function Admin() {
         return;
       }
       
-      const response = await fetch('http://84.201.156.127:5085/api/tournaments/tournament/create', {
+      const response = await fetch('http://51.250.34.126:5085/api/tournaments/tournament/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ export function Admin() {
   const handleDeleteTournament = async (tournamentId: string, tournamentName: string) => {
     if (window.confirm(`Вы уверены, что хотите удалить турнир "${tournamentName}"?`)) {
       try {
-        const response = await fetch(`http://84.201.156.127:5085/api/tournaments/tournament/delete/${tournamentId}`, {
+        const response = await fetch(`http://51.250.34.126:5085/api/tournaments/tournament/delete/${tournamentId}`, {
           method: 'DELETE',
           headers: {
             'accept': 'text/plain',
