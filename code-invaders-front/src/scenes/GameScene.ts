@@ -312,7 +312,7 @@ export class GameScene extends Phaser.Scene
 
         if (this.tournamentId && this.playerName) {
             try {
-                const response = await fetch('http://158.160.49.96:5085/api/gameResults/create', {
+                const response = await fetch('http://51.250.10.101:5085/api/gameResults/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

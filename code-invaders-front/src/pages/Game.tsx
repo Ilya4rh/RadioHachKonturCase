@@ -25,7 +25,7 @@ export function Game() {
             setIsLoadingTournaments(true);
             setError(null);
             try {
-                const response = await fetch('http://158.160.49.96:5085/api/tournaments/actual', {
+                const response = await fetch('http://51.250.10.101:5085/api/tournaments/actual', {
                     headers: {
                         "Access-Control-Allow-Origin": "*"
                     }
